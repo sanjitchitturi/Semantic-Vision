@@ -20,8 +20,8 @@ This project shows how **multimodal AI** (vision + language) works in practice: 
 ```
 
 Semantic Vision/
-│── caption\_generator.py   # Main script to run captioning
-│── README.md              # Project documentation
+│── caption\_generator.py
+│── README.md
 
 ````
 
