@@ -1,101 +1,87 @@
-# Semantic Vision  
+# Semantic Vision
 
-An **AI-powered image caption generator** that converts pictures into human-like text descriptions using a pre-trained **vision-language transformer** (BLIP).  
-
-This project shows how **multimodal AI** (vision + language) works in practice: you give the model an image, and it generates a natural-language caption like:  
-
-> *“A cat sitting on a laptop keyboard.”*  
+**Semantic Vision** is a lightweight, AI-powered **zero-shot image classifier** that interprets images and predicts their content using natural-language labels. Built with **OpenAI CLIP** and Python, this project demonstrates how multimodal AI (vision + language) works in practice — no GPU required.
 
 ---
 
 ## Features
-- Generate captions for **any image** (local file or online URL)  
-- Powered by Hugging Face’s **BLIP (Bootstrapping Language-Image Pretraining)** model  
-- Minimal code (only ~40 lines!) → perfect for beginners and portfolio projects  
-- Extensible: can be turned into a **web app (Streamlit/Gradio)** or fine-tuned on a custom dataset  
+
+* Classify images with **custom labels** or default ones (`cat`, `dog`, `car`, `person`, `food`, `tree`)
+* Accepts **local image paths** or **online image URLs**
+* **CLI-only**, lightweight, and runs on CPU
+* Shows **probabilities** for each label, highlighting the top prediction
+* Fully **zero-shot** — no model training required
 
 ---
 
-## Project Structure
+## Demo
+
+```
+$ python semantic_vision.py
+Semantic Vision — Zero-Shot Image Classifier
+Type an image path or URL (or 'exit' to quit).
+
+Enter image path or URL: https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/coco_sample.png
+Enter comma-separated labels (or press Enter for defaults):
+
+Results:
+cat: 95.33%
+dog: 1.22%
+car: 0.55%
+person: 2.90%
+food: 0.00%
+tree: 0.00%
+
+Prediction: cat (95.33%)
 ```
 
-Semantic Vision/
-│── caption\_generator.py
-│── README.md
-
-````
-
 ---
 
-## Quick Demo
+## Installation
 
-```bash
-$ python caption_generator.py
-AI Image Caption Generator Ready! Type an image path/URL or 'exit'.
-
-Enter image path or URL: https://huggingface.co/datasets/nateraw/image-captioning/resolve/main/example.jpg
-
-🖼️ Caption: a cat sitting on a laptop keyboard
-````
-
----
-
-## Installation & Setup
-
-### 1. Clone the repo
+1. Clone the repository
 
 ```bash
 git clone https://github.com/sanjitchitturi/Semantic-Vision.git
 cd Semantic-Vision
 ```
 
-### 2. Install dependencies
+2. Create a virtual environment
 
 ```bash
-pip install transformers pillow requests
+python3 -m venv venv
+source venv/bin/activate
 ```
 
-### 3. Run the script
+3. Install dependencies
 
 ```bash
-python caption_generator.py
+pip install -r requirements.txt
 ```
 
 ---
 
-## How It Works
+## Usage
 
-1. Loads the **BLIP model + processor** from Hugging Face
-2. Takes an input image (from a file or URL)
-3. Converts the image into embeddings and generates text using the model
-4. Outputs a human-readable caption
+Run the CLI script:
 
-The magic happens thanks to **vision-language transformers**, which combine image understanding with natural language generation.
+```bash
+python semantic_vision.py
+```
 
----
-
-## Example Captions
-
-| Input Image                                                                                | Generated Caption                    |
-| ------------------------------------------------------------------------------------------ | ------------------------------------ |
-| ![cat](https://huggingface.co/datasets/nateraw/image-captioning/resolve/main/example.jpg)  | *a cat sitting on a laptop keyboard* |
-| ![dog](https://huggingface.co/datasets/nateraw/image-captioning/resolve/main/example2.jpg) | *a dog running across a field*       |
+1. **Enter an image path** (local) or **image URL**.
+2. **Enter comma-separated labels** to classify (or press Enter for defaults).
+3. The script outputs probabilities for each label and highlights the top prediction.
+4. Type `exit` or `quit` to close the program.
 
 ---
 
 ## Tech Stack
 
 * **Python 3**
-* **Hugging Face Transformers** (`blip-image-captioning-base`)
-* **PIL (Pillow)** for image handling
+* **Transformers** (Hugging Face CLIP model: `openai/clip-vit-base-patch32`)
+* **PyTorch** (CPU version)
+* **Pillow** for image processing
 * **Requests** for fetching online images
-
----
-
-## Future Enhancements
-
-* Add a **web app interface** (Streamlit or Gradio)
-* Fine-tune on a **custom dataset** (e.g., domain-specific images)
-* Export as a simple **REST API** with FastAPI/Flask
 
 ---
