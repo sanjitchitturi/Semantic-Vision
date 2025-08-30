@@ -1,87 +1,122 @@
 # Semantic Vision
 
-**Semantic Vision** is a lightweight, AI-powered **zero-shot image classifier** that interprets images and predicts their content using natural-language labels. Built with **OpenAI CLIP** and Python, this project demonstrates how multimodal AI (vision + language) works in practice — no GPU required.
+A small, focused CLI tool for **zero-shot image classification** using OpenAI CLIP. Give it an image (or a folder/URL), tell it some labels, and it will rank how likely each label is for the image — no training required.
 
 ---
 
-## Features
+## Key features
 
-* Classify images with **custom labels** or default ones (`cat`, `dog`, `car`, `person`, `food`, `tree`)
-* Accepts **local image paths** or **online image URLs**
-* **CLI-only**, lightweight, and runs on CPU
-* Shows **probabilities** for each label, highlighting the top prediction
-* Fully **zero-shot** — no model training required
-
----
-
-## Demo
-
-```
-$ python semantic_vision.py
-Semantic Vision — Zero-Shot Image Classifier
-Type an image path or URL (or 'exit' to quit).
-
-Enter image path or URL: https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/coco_sample.png
-Enter comma-separated labels (or press Enter for defaults):
-
-Results:
-cat: 95.33%
-dog: 1.22%
-car: 0.55%
-person: 2.90%
-food: 0.00%
-tree: 0.00%
-
-Prediction: cat (95.33%)
-```
+- Zero-shot classification with custom labels.
+- Prompt templates (averaging prompts improves CLIP performance).  
+- Interactive mode or single-shot CLI mode.  
+- Batch/directory processing and optional CSV export.  
+- Auto device selection (use CUDA when available).  
+- CPU-friendly defaults and a single-file script.
 
 ---
 
-## Installation
+## Quick start
 
-1. Clone the repository
+1. Create and activate a virtual environment (recommended):
 
 ```bash
-git clone https://github.com/sanjitchitturi/Semantic-Vision.git
-cd Semantic-Vision
-```
+python -m venv .venv
+source .venv/bin/activate        # macOS / Linux
+.\.venv\Scripts\activate         # Windows (PowerShell)
+````
 
-2. Create a virtual environment
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-3. Install dependencies
+2. Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
+> **Note:** `requirements.txt` lists `torch`, but for best performance on GPU you should install the `torch` wheel that matches your CUDA version. See [https://pytorch.org](https://pytorch.org) for the appropriate install command.
+
+3. Run the CLI:
+
+* Interactive mode:
+
+  ```bash
+  python semantic_vision.py
+  ```
+
+* One-shot (single image):
+
+  ```bash
+  python semantic_vision.py --input "https://example.com/photo.jpg" \
+    --labels "cat,dog,truck" --templates "a photo of a {},a drawing of a {}" --topk 3
+  ```
+
+* Batch (directory):
+
+  ```bash
+  python semantic_vision.py --input ./images_folder --csv results.csv --topk 5
+  ```
+
 ---
 
-## Usage
+## Examples
 
-Run the CLI script:
+Interactive session example (user input marked with `>`):
 
-```bash
-python semantic_vision.py
+```
+Image path / URL / directory: > https://images.example/cat.jpg
+Labels (comma-separated, Enter for defaults): > cat,dog,fox
+Templates (comma-separated, use '{}' for label, Enter for defaults): > a photo of a {},a close-up of a {}
+Top-k to show (Enter for all): > 3
+
+Image: https://images.example/cat.jpg
+  cat: 95.32%
+  dog: 2.01%
+  fox: 0.45%
+Prediction: cat (95.32%)
 ```
 
-1. **Enter an image path** (local) or **image URL**.
-2. **Enter comma-separated labels** to classify (or press Enter for defaults).
-3. The script outputs probabilities for each label and highlights the top prediction.
-4. Type `exit` or `quit` to close the program.
+CLI example that writes CSV:
+
+```bash
+python semantic_vision.py --input "./sample_images" --labels "cat,dog,person" --csv out.csv --topk 3
+```
 
 ---
 
-## Tech Stack
+## Recommended settings & tips
 
-* **Python 3**
-* **Transformers** (Hugging Face CLIP model: `openai/clip-vit-base-patch32`)
-* **PyTorch** (CPU version)
-* **Pillow** for image processing
-* **Requests** for fetching online images
+* **Templates:** Use 1–3 templates for CPU runs. Good defaults:
+
+  * `a photo of a {}`
+  * `a picture of a {}`
+  * `there is a {} in this image`
+* **Labels:** Keep label lists to a reasonable size on CPU (dozens, not thousands). For large label sets, consider batching or using fewer templates.
+* **GPU:** If you have CUDA and want faster inference, install the correct `torch` + CUDA wheel from pytorch.org before installing other requirements.
+* **Threads:** You can set CPU threads with `--threads` (or call `torch.set_num_threads(...)`) to tune performance.
+* **CSV output:** Use `--csv output.csv` to save results. The CSV contains image paths and ranked labels/scores.
+
+---
+
+## CLI reference
+
+```
+usage: semantic_vision.py [-h] [--input INPUT] [--labels LABELS] [--templates TEMPLATES]
+                          [--topk TOPK] [--csv CSV] [--device {auto,cpu,cuda}] [--threads THREADS]
+```
+
+* `--input, -i` : Image path / URL / directory. If omitted, starts interactive mode.
+* `--labels, -l` : Comma-separated labels (defaults are provided).
+* `--templates, -t` : Comma-separated templates using `{}` as placeholder for the label.
+* `--topk` : Show top-k labels only.
+* `--csv` : Path to write results as CSV.
+* `--device` : `auto`, `cpu`, or `cuda`. `auto` uses CUDA if available.
+* `--threads` : (Optional) Set number of CPU threads for torch.
+
+---
+
+## Troubleshooting
+
+* **Model download hangs**: The first run downloads CLIP weights — ensure you have internet access and enough disk space.
+* **Slow on CPU**: Reduce templates and number of labels. Use fewer CPU threads if the system is overloaded.
+* **Unsupported image formats**: Supported extensions include `.jpg .jpeg .png .bmp .gif .tiff`. Convert other formats to one of these.
+* **CUDA errors**: Make sure the `torch` version matches your CUDA driver. Reinstall the appropriate wheel from pytorch.org.
 
 ---
