@@ -1,23 +1,23 @@
 # Semantic Vision
 
-A small, focused CLI tool for **zero-shot image classification** using OpenAI CLIP. Give it an image (or a folder/URL), tell it some labels, and it will rank how likely each label is for the image — no training required.
+A small, focused CLI tool for **zero-shot image classification** using OpenAI CLIP. Give it an image, tell it some labels, and it will rank how likely each label is for the image — no training required.
 
 ---
 
 ## Key features
 
 - Zero-shot classification with custom labels.
-- Prompt templates (averaging prompts improves CLIP performance).  
+- Prompt templates.  
 - Interactive mode or single-shot CLI mode.  
 - Batch/directory processing and optional CSV export.  
-- Auto device selection (use CUDA when available).  
+- Auto device selection.  
 - CPU-friendly defaults and a single-file script.
 
 ---
 
 ## Quick start
 
-1. Create and activate a virtual environment (recommended):
+1. Create and activate a virtual environment:
 
 ```bash
 python -m venv .venv
@@ -58,7 +58,7 @@ pip install -r requirements.txt
 
 ## Examples
 
-Interactive session example (user input marked with `>`):
+Interactive session example:
 
 ```
 Image path / URL / directory: > https://images.example/cat.jpg
