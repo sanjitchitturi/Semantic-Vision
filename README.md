@@ -11,7 +11,7 @@ A small, focused CLI tool for **zero-shot image classification** using OpenAI CL
 - Interactive mode or single-shot CLI mode.  
 - Batch/directory processing and optional CSV export.  
 - Auto device selection.  
-- CPU-friendly defaults and a single-file script.
+- CPU friendly defaults and a single-file script.
 
 ---
 
@@ -21,8 +21,7 @@ A small, focused CLI tool for **zero-shot image classification** using OpenAI CL
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate        # macOS / Linux
-.\.venv\Scripts\activate         # Windows (PowerShell)
+source .venv/bin/activate
 ````
 
 2. Install dependencies:
