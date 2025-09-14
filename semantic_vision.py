@@ -1,13 +1,3 @@
-"""Semantic Vision — polished zero-shot image classifier using CLIP (CLI).
-
-Features:
-- Interactive mode or single-run CLI
-- Directory (batch) processing
-- Prompt templates and averaging
-- Top-k output, optional CSV export
-- Auto device selection (CUDA if available)
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -27,10 +17,8 @@ DEFAULT_LABELS = ["cat", "dog", "car", "person", "food", "tree"]
 DEFAULT_TEMPLATES = ["a photo of a {}", "a picture of a {}", "there is a {} in this image"]
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".bmp", ".gif", ".tiff"}
 
-
 def is_url(s: str) -> bool:
     return s.startswith(("http://", "https://"))
-
 
 def load_image(path_or_url: str, timeout: int = 10) -> Optional[Image.Image]:
     try:
@@ -43,7 +31,6 @@ def load_image(path_or_url: str, timeout: int = 10) -> Optional[Image.Image]:
         print(f"[error] failed to load '{path_or_url}': {exc}", file=sys.stderr)
         return None
 
-
 def discover_images(path: str) -> List[str]:
     p = Path(path)
     if p.is_file():
@@ -55,7 +42,6 @@ def discover_images(path: str) -> List[str]:
         return [path]
     return []
 
-
 def load_model(device_str: str | torch.device = "cpu") -> Tuple[CLIPModel, CLIPProcessor, torch.device]:
     device = torch.device(device_str)
     print(f"Loading model '{MODEL_NAME}' on {device} ...")
@@ -63,11 +49,9 @@ def load_model(device_str: str | torch.device = "cpu") -> Tuple[CLIPModel, CLIPP
     processor = CLIPProcessor.from_pretrained(MODEL_NAME)
     return model, processor, device
 
-
 def validate_templates(templates: Sequence[str]) -> List[str]:
     out = [t for t in templates if "{}" in t]
     return out if out else DEFAULT_TEMPLATES
-
 
 def format_labels(labels_text: Optional[str]) -> List[str]:
     if not labels_text:
@@ -75,10 +59,8 @@ def format_labels(labels_text: Optional[str]) -> List[str]:
     labels = [l.strip() for l in labels_text.split(",") if l.strip()]
     return labels or DEFAULT_LABELS.copy()
 
-
 def make_prompts(labels: Sequence[str], templates: Sequence[str]) -> List[str]:
     return [tpl.format(lbl) for lbl in labels for tpl in templates]
-
 
 def predict_for_image(
     image: Image.Image,
@@ -107,13 +89,11 @@ def predict_for_image(
     ranked = sorted(zip(labels, scores.tolist()), key=lambda x: x[1], reverse=True)
     return ranked[:top_k] if top_k else ranked
 
-
 def write_csv(path: str, rows: Iterable[Sequence[str | float]]) -> None:
     with open(path, "w", newline="", encoding="utf-8") as fh:
         w = csv.writer(fh)
         for row in rows:
             w.writerow(row)
-
 
 def process_images(
     inputs: Sequence[str],
@@ -157,7 +137,6 @@ def process_images(
         write_csv(csv_out, csv_rows)
         print(f"\nSaved CSV to: {csv_out}")
 
-
 def interactive_mode(model: CLIPModel, processor: CLIPProcessor, device: torch.device) -> None:
     print("Interactive mode. Type 'exit' or 'quit' to leave.")
     while True:
@@ -186,7 +165,6 @@ def interactive_mode(model: CLIPModel, processor: CLIPProcessor, device: torch.d
 
         process_images(inputs, labels, templates, model, processor, device, top_k, csv_out=None)
 
-
 def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Semantic Vision — zero-shot CLIP classifier")
     p.add_argument("--input", "-i", help="Image path / URL / directory (interactive if omitted)")
@@ -197,7 +175,6 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     p.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto", help="Device to use")
     p.add_argument("--threads", type=int, help="Set torch CPU thread count (optional)")
     return p.parse_args(argv)
-
 
 def main(argv: Optional[Sequence[str]] = None) -> None:
     args = parse_args(argv)
